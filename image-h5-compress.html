@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+     <input type="file" id="filechooser" />
+     <img alt="Image Previewer" id="previewer" width="200px" height="200px">
+     <script>
+        var filechooser = document.getElementById('filechooser');
+        var previewer = document.getElementById('previewer');
+
+    // 200 KB 对应的字节数
+        var maxsize = 200 * 1024;
+
+        filechooser.onchange = function() {
+            var files = this.files;
+            var file = files[0];
+            console.log(file);
+            // 接受 jpeg, jpg, png 类型的图片
+            if (!/\/(?:jpeg|jpg|png)/i.test(file.type)) return;
+
+          var reader = new FileReader();
+
+          reader.onload = function() {
+              var result = this.result;
+              var img = new Image();
+
+              // 如果图片小于 200kb，不压缩
+              if (result.length <= maxsize) {
+                  toPreviewer(result);
+                  return;
+              }
+              // 图片上传 压缩
+              img.onload = function() {
+                  var compressedDataUrl = compress(img, file.type);
+                  toPreviewer(compressedDataUrl);
+                  img = null;
+                };
+
+              img.src = result;
+          };
+
+          reader.readAsDataURL(file);
+      };
+
+      // 图片预览
+      function toPreviewer(dataUrl) {
+          previewer.src = dataUrl;
+          filechooser.value = '';
+      }
+     // 图片压缩
+      function compress(img, fileType) {
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext('2d');
+
+          var width = img.width;
+          var height = img.height;
+
+          canvas.width = width;
+          canvas.height = height;
+
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 压缩
+          var base64data = canvas.toDataURL(fileType, 0.75);
+          canvas = ctx = null;
+
+          return base64data;
+      }
+
+     </script>
+  </body>
+</html>
