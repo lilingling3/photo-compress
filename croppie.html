@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>图片上传</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/croppie/2.4.1/croppie.css" />
+    <script src="https://cdn.bootcss.com/croppie/2.4.1/croppie.js"></script>
+  </head>
+  <body>
+    <!--<input type="file" accept="images/*">
+    <input class="url" type="url" placeholder="url">
+    <div class="container"></div>
+    <button class="submit">Submit</button>
+
+
+   <div id="result" name="result"></div>-->
+
+      <div class="actions">
+        <button class="file-btn">
+            <span>上传</span>
+            <input type="file" id="upload" value="选择图片文件" />
+        </button>
+        <div class="crop">
+            <div id="upload-demo"></div>
+            <button class="upload-result">裁剪</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+      // 获取文件
+//         $('input[type=file]').change(function(){
+//             var file=this.files[0];
+//             console.log(file)
+//             // 读取文件 生成image 元素
+//             var reader = new FileReader();
+//             // reader.readAsDataURL(file); 以DataURL形式 写入页面
+//             // reader.readAsText(file); 以文本形式写入页面
+//             // reader.readAsBinaryString(file);以二进制形式写入页面
+//             reader.onload=function(){
+//           // 通过 reader.result 来访问生成的 DataURL
+//             var url=reader.result;
+//             setImageURL(url);
+//           };
+//           reader.readAsDataURL(file);
+
+//         });
+
+//         var image = new Image();
+//         function setImageURL(url){
+//             image.src=url;
+//         }
+//        $('#result').html(image)
+//        var x, y,width, height;
+
+//       var canvas=$('<canvas width="'+width+'" height="'+height+'"></canvas>')[0],
+//       ctx=canvas.getContext('2d');
+
+//       ctx.drawImage(image,x,y,width,height,0,0,width,height);
+//       $(document.body).append(canvas);
+
+//       var data=canvas.toDataURL();
+
+// // dataURL 的格式为 “data:image/png;base64,****”,逗号之前都是一些说明性的文字，我们只需要逗号之后的就行了
+//     data=data.split(',')[1];
+//     data=window.atob(data);
+//     var ia = new Uint8Array(data.length);
+//     for (var i = 0; i < data.length; i++) {
+//         ia[i] = data.charCodeAt(i);
+//     };
+
+//     // canvas.toDataURL 返回的默认格式就是 image/png
+//     var blob=new Blob([ia], {type:"image/png"});
+
+$(function(){
+    var $uploadCrop;
+
+        function readFile(input) {
+             if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $uploadCrop.croppie('bind', {
+                        url: e.target.result
+                    });
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+            else {
+                alert("Sorry - you're browser doesn't support the FileReader API");
+            }
+        }
+
+        $uploadCrop = $('#upload-demo').croppie({
+            viewport: {
+                width: 300,
+                height: 300,
+                type: 'circle'
+            },
+            boundary: {
+                width: 300,
+                height: 300
+            }
+        });
+
+        $('#upload').on('change', function () {
+            $(".crop").show();
+            readFile(this);
+        });
+        $('.upload-result').on('click', function (ev) {
+            $uploadCrop.croppie('result', 'canvas').then(function (resp) {
+                popupResult({
+                    src: resp
+                });
+            });
+        });
+
+    function popupResult(result) {
+        var html;
+        if (result.html) {
+            html = result.html;
+        }
+        if (result.src) {
+            html = '<img src="' + result.src + '" />';
+        }
+        $("#result").html(html);
+    }
+});
+
+
+
+
+</script>
+  </body>
+</html>
